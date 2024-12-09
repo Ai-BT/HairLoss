@@ -28,7 +28,7 @@ class HairLossDataset(Dataset):
                     with open(json_file_path, 'r') as f:
                         json_data = json.load(f)
                         image_file = os.path.join(image_dir, class_dir, json_data['image_file_name'])
-                        label = int(json_data['value_3'])  # Example: Use 'value_3' as the label
+                        label = int(json_data['value_6'])
                         self.data.append((image_file, label))
 
     def __len__(self):
@@ -66,8 +66,8 @@ val_length = total_length - train_length  # 20% validation
 train_dataset, val_dataset = random_split(dataset, [train_length, val_length])
 
 # DataLoader 생성
-train_dataloader = DataLoader(train_dataset, batch_size=64, shuffle=True, num_workers=0, pin_memory=True)
-val_dataloader = DataLoader(val_dataset, batch_size=64, shuffle=False, num_workers=0,  pin_memory=True)
+train_dataloader = DataLoader(train_dataset, batch_size=32, shuffle=True, num_workers=0, pin_memory=True)
+val_dataloader = DataLoader(val_dataset, batch_size=32, shuffle=False, num_workers=0,  pin_memory=True)
 
 # 클래스 수
 classes = 4
@@ -77,8 +77,9 @@ print(device)
 torch.backends.cudnn.benchmark = True
 
 # Model
-model = models.resnet50(pretrained=True)
-model.fc = nn.Linear(model.fc.in_features, classes)
+model = models.efficientnet_b7(pretrained=True)
+# model.fc = nn.Linear(model.fc.in_features, classes)
+model.classifier[1] = nn.Linear(model.classifier[1].in_features, classes)
 model = nn.DataParallel(model)
 model.to(device)
 
