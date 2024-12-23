@@ -1,1 +1,1 @@
-# HairLoss
+# Hair Loss Detection Project
